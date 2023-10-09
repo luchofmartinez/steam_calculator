@@ -2,8 +2,7 @@
 *.class
 *.log
 *.pyc
-*.swp
-*.jks
+*.swp 
 .DS_Store
 .atom/
 .buildlog/
@@ -29,6 +28,7 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
+.jks
 .pub-cache/
 .pub/
 /build/
