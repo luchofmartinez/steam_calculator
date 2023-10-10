@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:steam_calculator/game.dart';
 
 class ResultsWidget extends StatelessWidget {
-  List<Tax> taxes;
+  final List<Tax> taxes;
 
-  ResultsWidget({super.key, required this.taxes});
+  const ResultsWidget({
+    super.key,
+    required this.taxes,
+  });
 
   final textStyle = const TextStyle(
     fontSize: 18,
@@ -33,7 +36,8 @@ class ResultsWidget extends StatelessWidget {
           shrinkWrap: true,
           itemBuilder: (context, index) {
             final tax = taxes[index];
-            return ListTile(contentPadding: EdgeInsets.all(4),
+            return ListTile(
+              contentPadding: EdgeInsets.all(4),
               title: Text(tax.description, style: textStyle),
               trailing:
                   Text('\$${tax.value.toStringAsFixed(2)}', style: textStyle),

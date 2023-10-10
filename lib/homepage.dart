@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:live_currency_rate/live_currency_rate.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:flutter/material.dart'; 
 import 'package:steam_calculator/game.dart';
 
 import 'package:steam_calculator/homepagebody.dart';
