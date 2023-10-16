@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:steam_calculator/currency.dart';
+import 'package:steam_calculator/data/db/database_service.dart';
 import 'package:steam_calculator/formadepago.dart';
 import 'package:steam_calculator/game.dart';
 import 'package:steam_calculator/provincias.dart';
@@ -30,6 +31,7 @@ class _HomePageBodyState extends State<HomePageBody> {
   double taxAmmount = 0.0;
   bool showTotals = false;
   bool hasStampTax = false;
+  bool _loading = false;
   double taxPercentage = 0.0;
 
   late String selectedLocation;
@@ -44,37 +46,46 @@ class _HomePageBodyState extends State<HomePageBody> {
     super.initState();
   }
 
-  void calcularIVA() {
+  void calcularIVA(List<double> list) {
     montoTotal = double.tryParse(gameAmmountController.text) ?? 0.0;
     if (montoTotal > 0) {
       double montoSubTotal = montoTotal;
 
-      taxAmmount = montoTotal * 0.21;
-      montoSubTotal += taxAmmount;
-      
-      Tax tax4 = Tax(
-        description: 'IVA',
-        percentage: 21.0,
+      Tax tax5 = Tax(
+        description: 'Percepción de Bienes Personales RG Nº 5430/2023',
+        percentage: list[2],
         value: taxAmmount,
       );
 
-      taxGananciasAmmount = montoTotal * 0.45;
-      montoSubTotal += taxGananciasAmmount;
+      taxAmmount = montoTotal * (tax5.percentage / 100);
+      montoSubTotal += taxAmmount;
+
+      Tax tax4 = Tax(
+        description: 'IVA',
+        percentage: list[1],
+        value: taxAmmount,
+      );
+
+      taxAmmount = montoTotal * (tax4.percentage / 100);
+      montoSubTotal += taxAmmount;
 
       Tax tax1 = Tax(
         description: 'Percepción Ganancias RG 4815/2020',
-        percentage: 45.0,
+        percentage: list[3],
         value: taxGananciasAmmount,
       );
 
-      taxLawAmmount = montoTotal * 0.3;
-      montoSubTotal += taxLawAmmount;
+      taxGananciasAmmount = montoTotal * (tax1.percentage / 100);
+      montoSubTotal += taxGananciasAmmount;
 
       Tax tax2 = Tax(
         description: 'Impuesto PAIS Ley 27.541',
-        percentage: 30.0,
+        percentage: list[0],
         value: taxLawAmmount,
       );
+
+      taxLawAmmount = montoTotal * (tax2.percentage / 100);
+      montoSubTotal += taxLawAmmount;
 
       switch (selectedLocation) {
         case 'CABA':
@@ -134,13 +145,13 @@ class _HomePageBodyState extends State<HomePageBody> {
       montoSubTotal += taxCreditCardAmmount;
 
       montoTotal = montoSubTotal;
-      showTotals = true;
 
       List<Tax> imp = [];
       imp.add(tax1);
       imp.add(tax2);
       imp.add(tax3);
       imp.add(tax4);
+      imp.add(tax5);
 
       Game juego = Game(
         value: montoTotal,
@@ -148,6 +159,9 @@ class _HomePageBodyState extends State<HomePageBody> {
       );
 
       widget.showGameData(juego);
+
+      
+      showTotals = true;
     }
   }
 
@@ -173,8 +187,9 @@ class _HomePageBodyState extends State<HomePageBody> {
   }
 
   FloatingActionButton ButtonCalculate() => FloatingActionButton.extended(
-        onPressed: () {
-          calcularIVA();
+        onPressed: () async {
+          final taxes = await DatabaseService().getTaxValues();
+          calcularIVA(taxes);
           focusNode.unfocus();
         },
         label: const Text('Calcular'),
@@ -196,7 +211,7 @@ class _HomePageBodyState extends State<HomePageBody> {
             style: textStyle,
             textAlign: TextAlign.center,
             controller: gameAmmountController,
-            keyboardType: TextInputType.number, 
+            keyboardType: TextInputType.number,
             focusNode: focusNode,
           ),
         )

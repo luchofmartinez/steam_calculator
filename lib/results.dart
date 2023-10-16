@@ -37,7 +37,7 @@ class ResultsWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final tax = taxes[index];
             return ListTile(
-              contentPadding: EdgeInsets.all(4),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
               title: Text(tax.description, style: textStyle),
               trailing:
                   Text('\$${tax.value.toStringAsFixed(2)}', style: textStyle),

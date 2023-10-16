@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Stack(
+            Stack( 
               children: [
                 const ImageBackGround(),
                 const ShareButton(),
@@ -44,8 +44,7 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Container(
-                        // width: 400,
+                      Container( 
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.teal[100],
