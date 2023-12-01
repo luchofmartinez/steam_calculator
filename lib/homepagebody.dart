@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:steam_calculator/currency.dart';
 import 'package:steam_calculator/data/db/database_service.dart';
+import 'package:steam_calculator/data/db/web_scrapper.dart';
 import 'package:steam_calculator/formadepago.dart';
 import 'package:steam_calculator/game.dart';
 import 'package:steam_calculator/provincias.dart';
@@ -46,46 +47,45 @@ class _HomePageBodyState extends State<HomePageBody> {
     super.initState();
   }
 
-  void calcularIVA(List<double> list) {
-    montoTotal = double.tryParse(gameAmmountController.text) ?? 0.0;
+  void calcularIVA(List<double> list) async {
+    if (selectedCurrency.description != 'USD') {
+      montoTotal = double.tryParse(gameAmmountController.text) ?? 0.0;
+    } else {
+      String value = await DollarCardAPI().fetchValueDollar();
+      montoTotal = double.tryParse(gameAmmountController.text)! * double.parse(value);
+    }
     if (montoTotal > 0) {
       double montoSubTotal = montoTotal;
 
-      Tax tax5 = Tax(
-        description: 'Percepción de Bienes Personales RG Nº 5430/2023',
-        percentage: list[2],
-        value: taxAmmount,
-      );
-
-      taxAmmount = montoTotal * (tax5.percentage / 100);
-      montoSubTotal += taxAmmount;
-
-      Tax tax4 = Tax(
-        description: 'IVA',
-        percentage: list[1],
-        value: taxAmmount,
-      );
-
-      taxAmmount = montoTotal * (tax4.percentage / 100);
-      montoSubTotal += taxAmmount;
-
       Tax tax1 = Tax(
         description: 'Percepción Ganancias RG 4815/2020',
-        percentage: list[3],
+        percentage: list[1],
         value: taxGananciasAmmount,
-      );
-
-      taxGananciasAmmount = montoTotal * (tax1.percentage / 100);
-      montoSubTotal += taxGananciasAmmount;
-
+      ); 
+      
       Tax tax2 = Tax(
         description: 'Impuesto PAIS Ley 27.541',
         percentage: list[0],
         value: taxLawAmmount,
-      );
+      ); 
 
-      taxLawAmmount = montoTotal * (tax2.percentage / 100);
+      Tax tax3 = Tax(
+        description: 'Percepción de Bienes Personales RG Nº 5430/2023',
+        percentage: list[2],
+        value: taxAmmount,
+      ); 
+
+      taxGananciasAmmount = montoTotal * (tax1.percentage / 100);      
+      montoSubTotal += taxGananciasAmmount;
+      tax1.value = taxGananciasAmmount;
+
+      taxAmmount = montoTotal * (tax2.percentage / 100);
+      montoSubTotal += taxAmmount;
+      tax2.value = taxAmmount;
+
+      taxLawAmmount = montoTotal * (tax3.percentage / 100);
       montoSubTotal += taxLawAmmount;
+      tax3.value = taxLawAmmount;
 
       switch (selectedLocation) {
         case 'CABA':
@@ -130,7 +130,7 @@ class _HomePageBodyState extends State<HomePageBody> {
       }
       montoSubTotal += taxLocationAmmount;
 
-      Tax tax3 = Tax(
+      Tax tax4 = Tax(
         description: 'Percepción Ingresos Brutos',
         percentage: taxPercentage * 100,
         value: taxLocationAmmount,
@@ -149,9 +149,8 @@ class _HomePageBodyState extends State<HomePageBody> {
       List<Tax> imp = [];
       imp.add(tax1);
       imp.add(tax2);
-      imp.add(tax3);
-      imp.add(tax4);
-      imp.add(tax5);
+      imp.add(tax3);  
+      imp.add(tax4);  
 
       Game juego = Game(
         value: montoTotal,
@@ -160,7 +159,6 @@ class _HomePageBodyState extends State<HomePageBody> {
 
       widget.showGameData(juego);
 
-      
       showTotals = true;
     }
   }
@@ -173,29 +171,29 @@ class _HomePageBodyState extends State<HomePageBody> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        LocationQuestion(),
-        const SizedBox(height: 20),
-        PaymentQuestion(),
-        const SizedBox(height: 20),
-        CurrencyQuestion(),
-        const SizedBox(height: 20),
-        GameValueQuestion(),
-        const SizedBox(height: 20),
-        ButtonCalculate()
+        locationQuestion(),
+        const SizedBox(height: 10),
+        paymentQuestion(),
+        const SizedBox(height: 10),
+        currencyQuestion(),
+        const SizedBox(height: 10),
+        gameValueQuestion(),
+        const SizedBox(height: 10),
+        buttonCalculate()
       ],
     );
   }
 
-  FloatingActionButton ButtonCalculate() => FloatingActionButton.extended(
+  Widget buttonCalculate() => ElevatedButton(
         onPressed: () async {
           final taxes = await DatabaseService().getTaxValues();
           calcularIVA(taxes);
           focusNode.unfocus();
         },
-        label: const Text('Calcular'),
+        child: const Text('Calcular'),
       );
 
-  Widget GameValueQuestion() {
+  Widget gameValueQuestion() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -219,7 +217,7 @@ class _HomePageBodyState extends State<HomePageBody> {
     );
   }
 
-  Widget CurrencyQuestion() {
+  Widget currencyQuestion() {
     List<DropdownMenuItem<Currency>> items = [];
 
     for (var curr in currencyList) {
@@ -257,6 +255,7 @@ class _HomePageBodyState extends State<HomePageBody> {
               onChanged: (newValue) {
                 setState(() {
                   selectedCurrency = newValue!;
+                  gameAmmountController.clear();
                 });
               },
             ),
@@ -266,7 +265,7 @@ class _HomePageBodyState extends State<HomePageBody> {
     );
   }
 
-  Widget PaymentQuestion() {
+  Widget paymentQuestion() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -309,7 +308,7 @@ class _HomePageBodyState extends State<HomePageBody> {
     );
   }
 
-  Widget LocationQuestion() {
+  Widget locationQuestion() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

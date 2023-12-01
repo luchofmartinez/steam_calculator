@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:steam_calculator/game.dart';
 
 import 'package:steam_calculator/homepagebody.dart';
@@ -30,61 +30,83 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 178, 189, 209),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
+      bottomSheet: Container(
+        alignment: Alignment.centerLeft,
+        width: double.infinity,
+        height: 50,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: Theme.of(context).primaryColorLight),
+        child: Row(
           children: [
-            Stack( 
-              children: [
-                const ImageBackGround(),
-                const ShareButton(),
-                const InfoButton(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 185, 10, 0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container( 
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.teal[100],
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(25),
-                            topRight: Radius.circular(25),
-                            bottomLeft: Radius.circular(25),
-                            bottomRight: Radius.circular(25),
-                          ),
-                        ),
-                        child: HomePageBody(showGameData: showGameValue),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            littleGame.taxes != null
-                ? ResultsWidget(taxes: littleGame.taxes!)
-                : Container(),
-            if (littleGame.value != null)
-              Container(
-                alignment: Alignment.centerLeft,
-                width: double.infinity,
-                height: 50,
-                padding: const EdgeInsets.all(10),
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColorLight),
-                child: Row(
-                  children: [
-                    Text(
-                      'Total \$${littleGame.value!.toStringAsFixed(2)}',
-                      style: textStyle,
-                    ),
-                  ],
-                ),
-              )
-            else
-              Container(),
+            littleGame.value != null && littleGame.value! > 0
+                ? Text(
+                    'Total \$${littleGame.value!.toStringAsFixed(2)}',
+                    style: textStyle,
+                  )
+                : Text(
+                    'Total \$0.00',
+                    style: textStyle,
+                  )
           ],
+        ),
+      ),
+      body: SizedBox( 
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Stack(
+                children: [
+                  const ImageBackGround(),
+                  const ShareButton(),
+                  const InfoButton(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 185, 10, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.teal[100],
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(25)),
+                          ),
+                          child: HomePageBody(showGameData: showGameValue),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              littleGame.taxes != null
+                  ? ResultsWidget(taxes: littleGame.taxes!)
+                  : Container(),
+              // if (littleGame.value != null)
+              //   Positioned(
+              //     bottom: 0,
+              //     child: Container(
+              //       alignment: Alignment.centerLeft,
+              //       width: double.infinity,
+              //       height: 50,
+              //       padding: const EdgeInsets.all(10),
+              //       decoration: BoxDecoration(
+              //           color: Theme.of(context).primaryColorLight),
+              //       child: Row(
+              //         children: [
+              //           Text(
+              //             'Total \$${littleGame.value!.toStringAsFixed(2)}',
+              //             style: textStyle,
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   )
+              // else
+              //   Container(),
+            ],
+          ),
         ),
       ),
     );
