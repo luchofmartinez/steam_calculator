@@ -10,6 +10,7 @@ class HomePageBody extends StatefulWidget {
   final void Function(Game) showGameData;
 
   const HomePageBody({
+    super.key,
     required this.showGameData,
   });
 
@@ -31,9 +32,9 @@ class _HomePageBodyState extends State<HomePageBody> {
   double taxLawAmmount = 0.0;
   double taxAmmount = 0.0;
   bool showTotals = false;
-  bool hasStampTax = false;
-  bool _loading = false;
+  bool hasStampTax = false; 
   double taxPercentage = 0.0;
+  String dollarValue = '';
 
   late String selectedLocation;
   late String selectedPaymentMethod;
@@ -47,45 +48,35 @@ class _HomePageBodyState extends State<HomePageBody> {
     super.initState();
   }
 
-  void calcularIVA(List<double> list) async {
+  void calcularIVA(List<Map<String, double>> list) async {
     if (selectedCurrency.description != 'USD') {
       montoTotal = double.tryParse(gameAmmountController.text) ?? 0.0;
     } else {
-      String value = await DollarCardAPI().fetchValueDollar();
-      montoTotal = double.tryParse(gameAmmountController.text)! * double.parse(value);
+      montoTotal = double.tryParse(gameAmmountController.text)! *
+          double.parse(dollarValue);
     }
     if (montoTotal > 0) {
       double montoSubTotal = montoTotal;
 
       Tax tax1 = Tax(
         description: 'Percepción Ganancias RG 4815/2020',
-        percentage: list[1],
+        percentage: list[1]['percepcionGanancias']!,
         value: taxGananciasAmmount,
-      ); 
-      
+      );
+
       Tax tax2 = Tax(
         description: 'Impuesto PAIS Ley 27.541',
-        percentage: list[0],
+        percentage: list[0]['impuestoPais']!,
         value: taxLawAmmount,
-      ); 
+      );
 
-      Tax tax3 = Tax(
-        description: 'Percepción de Bienes Personales RG Nº 5430/2023',
-        percentage: list[2],
-        value: taxAmmount,
-      ); 
-
-      taxGananciasAmmount = montoTotal * (tax1.percentage / 100);      
+      taxGananciasAmmount = montoTotal * (tax1.percentage / 100);
       montoSubTotal += taxGananciasAmmount;
       tax1.value = taxGananciasAmmount;
 
       taxAmmount = montoTotal * (tax2.percentage / 100);
       montoSubTotal += taxAmmount;
       tax2.value = taxAmmount;
-
-      taxLawAmmount = montoTotal * (tax3.percentage / 100);
-      montoSubTotal += taxLawAmmount;
-      tax3.value = taxLawAmmount;
 
       switch (selectedLocation) {
         case 'CABA':
@@ -130,16 +121,21 @@ class _HomePageBodyState extends State<HomePageBody> {
       }
       montoSubTotal += taxLocationAmmount;
 
-      Tax tax4 = Tax(
+      Tax tax3 = Tax(
         description: 'Percepción Ingresos Brutos',
         percentage: taxPercentage * 100,
         value: taxLocationAmmount,
       );
 
       taxCreditCardAmmount = 0.0;
+      Tax? tax4;
       switch (selectedPaymentMethod) {
         case 'Tarjeta de Crédito':
           taxCreditCardAmmount = montoTotal * 0.012;
+          tax4 = Tax(
+              description: 'Impuesto a los sellos',
+              percentage: 1.2,
+              value: taxCreditCardAmmount);
           break;
       }
       montoSubTotal += taxCreditCardAmmount;
@@ -149,8 +145,10 @@ class _HomePageBodyState extends State<HomePageBody> {
       List<Tax> imp = [];
       imp.add(tax1);
       imp.add(tax2);
-      imp.add(tax3);  
-      imp.add(tax4);  
+      imp.add(tax3);
+      if (tax4 != null) {
+        imp.add(tax4);
+      }
 
       Game juego = Game(
         value: montoTotal,
@@ -240,6 +238,14 @@ class _HomePageBodyState extends State<HomePageBody> {
             style: textStyle,
           ),
         ),
+        if (selectedCurrency.description == 'USD')
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              '1 USD ≈ $dollarValue ARS',
+              style: TextStyle(color: Colors.grey.shade900),
+            ),
+          ),
         DecoratedBox(
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -252,9 +258,12 @@ class _HomePageBodyState extends State<HomePageBody> {
               value: selectedCurrency,
               borderRadius: BorderRadius.circular(15),
               items: items,
-              onChanged: (newValue) {
+              onChanged: (newValue) async {
+                if (newValue!.description == 'USD') {
+                  dollarValue = await DollarCardAPI().fetchValueDollar();
+                }
                 setState(() {
-                  selectedCurrency = newValue!;
+                  selectedCurrency = newValue;
                   gameAmmountController.clear();
                 });
               },

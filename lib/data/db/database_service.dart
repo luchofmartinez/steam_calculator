@@ -1,20 +1,23 @@
- 
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<double>> getTaxValues() async {
+  Future<List<Map<String, double>>> getTaxValues() async {
     try {
-      final parameterDocument =
-          await _firestore.collection('parametros').doc('taxes').get();
-      final List<double> taxes = [];
+      final querySnap = await _firestore.collection('taxes').get();
+      final List<Map<String, double>> taxes = [];
 
-      if (parameterDocument.exists) {
-        final t = parameterDocument.data() as Map;
-        t.entries.forEach((element) {
-          taxes.add(double.parse(element.value));
-        });
+      if (querySnap.docs.isNotEmpty) {
+        for (var doc in querySnap.docs) {
+          var tax = doc.data();
+          tax.forEach((key, value) {
+            if (value == true) {
+              taxes.add({doc.id: double.parse(tax.values.first)});
+            }  
+          });
+        } 
         return taxes;
       } else {
         return List.empty();

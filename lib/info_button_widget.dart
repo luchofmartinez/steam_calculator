@@ -43,7 +43,7 @@ class InfoButton extends StatelessWidget {
                           cells: [
                             DataCell(Text(
                                 'Percepción de Ganancias RG AFIP Nº 5232/2022')),
-                            DataCell(Text('100%')),
+                            DataCell(Text('30%')),
                           ],
                         ),
                         DataRow(
@@ -53,13 +53,13 @@ class InfoButton extends StatelessWidget {
                             DataCell(Text('30%')),
                           ],
                         ),
-                        DataRow(
-                          cells: [
-                            DataCell(Text(
-                                'Percepción de Bienes Personales RG AFIP Nº 5430/2023')),
-                            DataCell(Text('25%')),
-                          ],
-                        )
+                        // DataRow(
+                        //   cells: [
+                        //     DataCell(Text(
+                        //         'Percepción de Bienes Personales RG AFIP Nº 5430/2023')),
+                        //     DataCell(Text('25%')),
+                        //   ],
+                        // )
                       ],
                     )
                   ],
