@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "754748818735",
+    "project_id": "parametrizaciones-336d9",
+    "storage_bucket": "parametrizaciones-336d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754748818735:android:589b5df37049908edc8dda",
+        "android_client_info": {
+          "package_name": "com.luchofmartinez.steam_calculator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACMxELurp9rEAyDXQauQXPGPWccc-ThOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

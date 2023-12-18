@@ -30,18 +30,34 @@ class ResultsWidget extends StatelessWidget {
             bottomRight: Radius.circular(25),
           ),
         ),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(2),
+        child: ListView.separated(
+          separatorBuilder: (_, a) => const Divider(),
+          padding: const EdgeInsets.all(7),
           itemCount: taxes.length,
           shrinkWrap: true,
           itemBuilder: (context, index) {
             final tax = taxes[index];
-            return ListTile(
-              contentPadding: EdgeInsets.all(4),
-              title: Text(tax.description, style: textStyle),
-              trailing:
-                  Text('\$${tax.value.toStringAsFixed(2)}', style: textStyle),
-            );
+            return Container(
+                padding: const EdgeInsets.all(2),
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [Text(tax.description, style: textStyle)],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      children: [
+                        Text('\$${tax.value.toStringAsFixed(2)}',
+                            style: textStyle)
+                      ],
+                    )
+                  ],
+                )); 
           },
         ),
       ),

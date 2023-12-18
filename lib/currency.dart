@@ -1,6 +1,6 @@
 List<Currency> currencyList = [
   Currency(description: 'ARS', enable: true),
-  Currency(description: 'USD', enable: false)
+  Currency(description: 'USD', enable: true)
 ];
 
 class Currency {

@@ -20,20 +20,49 @@ class InfoButton extends StatelessWidget {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               elevation: 2,
-              title: const Text('Calculadora IVA Steam'),
-              children: const [
-                Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        'Los precios calculados son aproximados. \r\nCualquier error puede ser enviado a luchofmartinez@gmail.com\r\n',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
+              title: const Center(child: Text('Calculadora IVA Steam')),
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Los precios calculados son aproximados. \r\nCualquier error puede ser enviado a luchofmartinez@gmail.com\r\n',
+                      style: TextStyle(
+                          fontSize: 18,
+                          // fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    DataTable(
+                      columnSpacing: 10,
+                      columns: const [
+                        DataColumn(label: Text('Impuesto')),
+                        DataColumn(label: Text('Valor')),
+                      ],
+                      rows: const [
+                        DataRow(
+                          cells: [
+                            DataCell(Text(
+                                'Percepción de Ganancias RG AFIP Nº 5232/2022')),
+                            DataCell(Text('30%')),
+                          ],
+                        ),
+                        DataRow(
+                          cells: [
+                            DataCell(
+                                Text('Ley Impuesto PAIS RG AFIP N° 4659/2020')),
+                            DataCell(Text('30%')),
+                          ],
+                        ),
+                        // DataRow(
+                        //   cells: [
+                        //     DataCell(Text(
+                        //         'Percepción de Bienes Personales RG AFIP Nº 5430/2023')),
+                        //     DataCell(Text('25%')),
+                        //   ],
+                        // )
+                      ],
+                    )
+                  ],
                 )
               ],
             ),
