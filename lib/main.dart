@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    
     return MaterialApp(
       theme: ThemeData(
         colorSchemeSeed: const Color.fromARGB(255, 11, 44, 100),

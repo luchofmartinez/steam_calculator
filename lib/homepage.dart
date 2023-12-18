@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:steam_calculator/data/db/remote_config_serice.dart';
 import 'package:steam_calculator/game.dart';
 
 import 'package:steam_calculator/homepagebody.dart';
@@ -19,6 +20,17 @@ class _HomePageState extends State<HomePage> {
 
   final textStyle = const TextStyle(
       fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black);
+
+  @override
+  void initState() {
+    checkUpdates();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  void checkUpdates() async {
+    await RemoteConfigService().checkForUpdates(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: SizedBox( 
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Column(
